@@ -1,10 +1,11 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CrawlForm } from "@/components/CrawlForm";
+import { useToast } from "@/components/ui/use-toast";
+import { ApiKeyService } from "@/services/apiKeyService";
 import {
   ChevronRight,
   Globe,
@@ -26,6 +27,7 @@ interface IndexingStats {
 }
 
 const Index = () => {
+  const { toast } = useToast();
   const [urls, setUrls] = useState<string[]>([]);
   const [sitemap, setSitemap] = useState("");
   const [googleKey, setGoogleKey] = useState("");
@@ -37,6 +39,23 @@ const Index = () => {
     remainingQuota: 200,
   });
 
+  useEffect(() => {
+    updateStats();
+  }, []);
+
+  const updateStats = () => {
+    const keys = ApiKeyService.getStoredKeys();
+    const googleQuota = ApiKeyService.getRemainingQuota('google');
+    const bingQuota = ApiKeyService.getRemainingQuota('bing');
+    
+    setStats({
+      totalUrls: 0,
+      activeApis: keys.length,
+      successRate: 0,
+      remainingQuota: googleQuota + bingQuota,
+    });
+  };
+
   const handleSitemapSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // TODO: Implement sitemap processing
@@ -45,20 +64,60 @@ const Index = () => {
 
   const handleGoogleKeySubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement Google API key validation
-    console.log("Saving Google API key");
+    try {
+      ApiKeyService.saveApiKey(googleKey, 'google');
+      toast({
+        title: "Sucesso",
+        description: "Chave da API do Google salva com sucesso",
+      });
+      setGoogleKey("");
+      updateStats();
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar a chave da API",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleBingKeySubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement Bing API key validation
-    console.log("Saving Bing API key");
+    try {
+      ApiKeyService.saveApiKey(bingKey, 'bing');
+      toast({
+        title: "Sucesso",
+        description: "Chave da API do Bing salva com sucesso",
+      });
+      setBingKey("");
+      updateStats();
+    } catch (error) {
+      toast({
+        title: "Erro",
+        description: "Erro ao salvar a chave da API",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleUrlSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement URL submission
+    // TODO: Implement URL submission with key rotation
+    const googleApiKey = ApiKeyService.getAvailableKey('google');
+    const bingApiKey = ApiKeyService.getAvailableKey('bing');
+    
+    if (!googleApiKey && !bingApiKey) {
+      toast({
+        title: "Erro",
+        description: "Nenhuma chave API disponível. Todas as quotas foram atingidas.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     console.log("Submitting URLs:", urls);
+    console.log("Using Google API Key:", googleApiKey);
+    console.log("Using Bing API Key:", bingApiKey);
   };
 
   return (
