@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +12,6 @@ import {
   Settings,
   Map,
   Search,
-  Microsoft,
 } from "lucide-react";
 
 const Index = () => {
@@ -77,7 +75,7 @@ const Index = () => {
                 Google API
               </TabsTrigger>
               <TabsTrigger value="bing" className="flex items-center gap-2">
-                <Microsoft className="h-4 w-4" />
+                <Search className="h-4 w-4" />
                 Bing API
               </TabsTrigger>
             </TabsList>
