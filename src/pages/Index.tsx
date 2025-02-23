@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { CrawlForm } from "@/components/CrawlForm";
 import {
   ChevronRight,
   Globe,
@@ -55,8 +56,14 @@ const Index = () => {
           />
         </section>
 
-        {/* URL Submission */}
+        {/* URL Analysis */}
         <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.2s" }}>
+          <h2 className="text-xl font-semibold mb-4">Content Analysis</h2>
+          <CrawlForm />
+        </section>
+
+        {/* URL Submission */}
+        <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.3s" }}>
           <h2 className="text-xl font-semibold mb-4">Submit URLs</h2>
           <div className="flex gap-4">
             <Input
@@ -80,7 +87,7 @@ const Index = () => {
         </section>
 
         {/* Recent Activity */}
-        <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.3s" }}>
+        <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.4s" }}>
           <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
           <div className="text-center text-muted-foreground py-8">
             No recent indexing activity
