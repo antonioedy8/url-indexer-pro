@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,13 +13,53 @@ import {
   Settings,
   Map,
   Search,
+  ListPlus,
+  History,
+  AlertCircle,
 } from "lucide-react";
+
+interface IndexingStats {
+  totalUrls: number;
+  activeApis: number;
+  successRate: number;
+  remainingQuota: number;
+}
 
 const Index = () => {
   const [urls, setUrls] = useState<string[]>([]);
   const [sitemap, setSitemap] = useState("");
   const [googleKey, setGoogleKey] = useState("");
   const [bingKey, setBingKey] = useState("");
+  const [stats, setStats] = useState<IndexingStats>({
+    totalUrls: 0,
+    activeApis: 0,
+    successRate: 0,
+    remainingQuota: 200,
+  });
+
+  const handleSitemapSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Implement sitemap processing
+    console.log("Registering sitemap:", sitemap);
+  };
+
+  const handleGoogleKeySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Implement Google API key validation
+    console.log("Saving Google API key");
+  };
+
+  const handleBingKeySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Implement Bing API key validation
+    console.log("Saving Bing API key");
+  };
+
+  const handleUrlSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Implement URL submission
+    console.log("Submitting URLs:", urls);
+  };
 
   return (
     <div className="min-h-screen p-8 bg-gradient-to-br from-background to-secondary">
@@ -27,11 +68,11 @@ const Index = () => {
           <div>
             <h1 className="text-4xl font-bold tracking-tight">URL Indexer Pro</h1>
             <p className="text-muted-foreground mt-2">
-              Effortlessly manage and index your URLs
+              Automatize a indexação de URLs no Google e Bing
             </p>
           </div>
           <Button variant="outline" className="gap-2">
-            Connect API <ChevronRight className="h-4 w-4" />
+            API Status <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </header>
@@ -40,30 +81,30 @@ const Index = () => {
         {/* Stats Overview */}
         <section className="grid grid-cols-1 md:grid-cols-4 gap-6 fade-enter" style={{ animationDelay: "0.1s" }}>
           <StatCard
-            icon={<Globe className="h-5 w-5 text-accent" />}
-            title="Total URLs"
-            value="0"
+            icon={<Globe className="h-5 w-5 text-blue-500" />}
+            title="Total de URLs"
+            value={stats.totalUrls.toString()}
           />
           <StatCard
-            icon={<Key className="h-5 w-5 text-accent" />}
-            title="Active APIs"
-            value="0"
+            icon={<Key className="h-5 w-5 text-green-500" />}
+            title="APIs Ativas"
+            value={stats.activeApis.toString()}
           />
           <StatCard
-            icon={<BarChart3 className="h-5 w-5 text-accent" />}
-            title="Success Rate"
-            value="0%"
+            icon={<BarChart3 className="h-5 w-5 text-yellow-500" />}
+            title="Taxa de Sucesso"
+            value={`${stats.successRate}%`}
           />
           <StatCard
-            icon={<Settings className="h-5 w-5 text-accent" />}
-            title="API Quota"
-            value="200/day"
+            icon={<Settings className="h-5 w-5 text-purple-500" />}
+            title="Quota Restante"
+            value={`${stats.remainingQuota}/dia`}
           />
         </section>
 
         {/* Configuration Tabs */}
         <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.2s" }}>
-          <h2 className="text-xl font-semibold mb-4">Configuration</h2>
+          <h2 className="text-xl font-semibold mb-4">Configuração</h2>
           <Tabs defaultValue="sitemap" className="w-full">
             <TabsList className="grid w-full grid-cols-3 mb-6">
               <TabsTrigger value="sitemap" className="flex items-center gap-2">
@@ -82,60 +123,60 @@ const Index = () => {
 
             <TabsContent value="sitemap">
               <Card className="p-6">
-                <h3 className="text-lg font-medium mb-4">Register Sitemap URL</h3>
-                <div className="space-y-4">
+                <h3 className="text-lg font-medium mb-4">Registrar Sitemap</h3>
+                <form onSubmit={handleSitemapSubmit} className="space-y-4">
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      Sitemap URL
+                      URL do Sitemap
                     </label>
                     <Input
-                      placeholder="https://example.com/sitemap.xml"
+                      placeholder="https://exemplo.com/sitemap.xml"
                       value={sitemap}
                       onChange={(e) => setSitemap(e.target.value)}
                     />
                   </div>
-                  <Button className="w-full">Register Sitemap</Button>
-                </div>
+                  <Button type="submit" className="w-full">Registrar Sitemap</Button>
+                </form>
               </Card>
             </TabsContent>
 
             <TabsContent value="google">
               <Card className="p-6">
-                <h3 className="text-lg font-medium mb-4">Google Search Console API</h3>
-                <div className="space-y-4">
+                <h3 className="text-lg font-medium mb-4">API do Google Search Console</h3>
+                <form onSubmit={handleGoogleKeySubmit} className="space-y-4">
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      API Key
+                      Chave da API
                     </label>
                     <Input
                       type="password"
-                      placeholder="Enter your Google API key"
+                      placeholder="Digite sua chave da API do Google"
                       value={googleKey}
                       onChange={(e) => setGoogleKey(e.target.value)}
                     />
                   </div>
-                  <Button className="w-full">Save Google API Key</Button>
-                </div>
+                  <Button type="submit" className="w-full">Salvar Chave do Google</Button>
+                </form>
               </Card>
             </TabsContent>
 
             <TabsContent value="bing">
               <Card className="p-6">
-                <h3 className="text-lg font-medium mb-4">Bing Webmaster API</h3>
-                <div className="space-y-4">
+                <h3 className="text-lg font-medium mb-4">API do Bing Webmaster</h3>
+                <form onSubmit={handleBingKeySubmit} className="space-y-4">
                   <div>
                     <label className="text-sm font-medium mb-2 block">
-                      API Key
+                      Chave da API
                     </label>
                     <Input
                       type="password"
-                      placeholder="Enter your Bing API key"
+                      placeholder="Digite sua chave da API do Bing"
                       value={bingKey}
                       onChange={(e) => setBingKey(e.target.value)}
                     />
                   </div>
-                  <Button className="w-full">Save Bing API Key</Button>
-                </div>
+                  <Button type="submit" className="w-full">Salvar Chave do Bing</Button>
+                </form>
               </Card>
             </TabsContent>
           </Tabs>
@@ -143,39 +184,41 @@ const Index = () => {
 
         {/* URL Analysis */}
         <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.3s" }}>
-          <h2 className="text-xl font-semibold mb-4">Content Analysis</h2>
+          <h2 className="text-xl font-semibold mb-4">Análise de Conteúdo</h2>
           <CrawlForm />
         </section>
 
         {/* URL Submission */}
         <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.4s" }}>
-          <h2 className="text-xl font-semibold mb-4">Submit URLs</h2>
-          <div className="flex gap-4">
-            <Input
-              placeholder="Enter URL or paste multiple URLs"
-              className="flex-1"
-              onChange={(e) => {
-                const newUrls = e.target.value
-                  .split("\n")
-                  .map((url) => url.trim())
-                  .filter(Boolean);
-                setUrls(newUrls);
-              }}
-            />
-            <Button className="bg-accent hover:bg-accent-hover text-white">
-              Submit for Indexing
-            </Button>
-          </div>
-          <p className="text-sm text-muted-foreground mt-2">
-            Enter one URL per line or paste multiple URLs
-          </p>
+          <h2 className="text-xl font-semibold mb-4">Enviar URLs</h2>
+          <form onSubmit={handleUrlSubmit}>
+            <div className="flex gap-4">
+              <Input
+                placeholder="Digite uma URL ou cole múltiplas URLs"
+                className="flex-1"
+                onChange={(e) => {
+                  const newUrls = e.target.value
+                    .split("\n")
+                    .map((url) => url.trim())
+                    .filter(Boolean);
+                  setUrls(newUrls);
+                }}
+              />
+              <Button type="submit" className="bg-accent hover:bg-accent-hover text-white">
+                Enviar para Indexação
+              </Button>
+            </div>
+            <p className="text-sm text-muted-foreground mt-2">
+              Digite uma URL por linha ou cole múltiplas URLs
+            </p>
+          </form>
         </section>
 
         {/* Recent Activity */}
         <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.5s" }}>
-          <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
+          <h2 className="text-xl font-semibold mb-4">Atividade Recente</h2>
           <div className="text-center text-muted-foreground py-8">
-            No recent indexing activity
+            Nenhuma atividade de indexação recente
           </div>
         </section>
       </main>
