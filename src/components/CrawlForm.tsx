@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { FirecrawlService } from '@/utils/FirecrawlService';
 import { Card } from "@/components/ui/card";
+import { Globe, Search, AlertCircle } from "lucide-react";
 
 interface CrawlResult {
   success: boolean;
@@ -15,6 +16,14 @@ interface CrawlResult {
   creditsUsed?: number;
   expiresAt?: string;
   data?: any[];
+}
+
+interface SEOMetrics {
+  title: string;
+  description: string;
+  h1Count: number;
+  imagesWithoutAlt: number;
+  brokenLinks: number;
 }
 
 export const CrawlForm = () => {
@@ -74,52 +83,93 @@ export const CrawlForm = () => {
     }
   };
 
+  const renderMetricCard = (icon: React.ReactNode, title: string, value: string | number, alert?: boolean) => (
+    <Card className={`p-4 ${alert ? 'border-red-500' : ''}`}>
+      <div className="flex items-center gap-2 mb-2">
+        {icon}
+        <h4 className="font-medium text-sm">{title}</h4>
+      </div>
+      <p className={`text-xl font-semibold ${alert ? 'text-red-500' : ''}`}>{value}</p>
+    </Card>
+  );
+
   return (
-    <div className="w-full max-w-md mx-auto p-6 backdrop-blur-sm bg-white/30 dark:bg-black/30 rounded-lg shadow-lg border border-gray-200 dark:border-gray-800 transition-all duration-300 hover:shadow-xl">
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="space-y-2">
-          <label htmlFor="url" className="text-sm font-medium text-gray-700 dark:text-gray-300">
-            Website URL
-          </label>
-          <Input
-            id="url"
-            type="url"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-            className="w-full transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
-            placeholder="https://example.com"
-            required
-          />
-        </div>
-        {isLoading && (
-          <Progress value={progress} className="w-full" />
-        )}
-        <Button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-gray-900 hover:bg-gray-800 text-white transition-all duration-200"
-        >
-          {isLoading ? "Crawling..." : "Start Crawl"}
-        </Button>
-      </form>
+    <div className="space-y-6">
+      <div className="w-full max-w-2xl mx-auto backdrop-blur-sm bg-white/30 dark:bg-black/30 rounded-lg shadow-lg border border-gray-200 dark:border-gray-800 transition-all duration-300 hover:shadow-xl p-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <label htmlFor="url" className="text-lg font-medium text-gray-700 dark:text-gray-300">
+              Enter Website URL for Analysis
+            </label>
+            <div className="flex gap-4">
+              <Input
+                id="url"
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                className="flex-1 transition-all duration-200 focus:ring-2 focus:ring-offset-2 focus:ring-gray-400"
+                placeholder="https://example.com"
+                required
+              />
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="bg-gray-900 hover:bg-gray-800 text-white transition-all duration-200 min-w-[120px]"
+              >
+                {isLoading ? "Analyzing..." : "Analyze"}
+              </Button>
+            </div>
+          </div>
+          {isLoading && (
+            <div className="space-y-2">
+              <Progress value={progress} className="w-full" />
+              <p className="text-sm text-center text-muted-foreground">
+                Analyzing website structure and content...
+              </p>
+            </div>
+          )}
+        </form>
+      </div>
 
       {crawlResult && (
-        <Card className="mt-6 p-4">
-          <h3 className="text-lg font-semibold mb-2">Crawl Results</h3>
-          <div className="space-y-2 text-sm">
-            <p>Status: {crawlResult.status}</p>
-            <p>Completed Pages: {crawlResult.completed}</p>
-            <p>Total Pages: {crawlResult.total}</p>
-            <p>Credits Used: {crawlResult.creditsUsed}</p>
-            <p>Expires At: {new Date(crawlResult.expiresAt || '').toLocaleString()}</p>
-            {crawlResult.data && (
-              <div className="mt-4">
-                <p className="font-semibold mb-2">Crawled Data:</p>
-                <pre className="bg-gray-100 dark:bg-gray-800 p-2 rounded overflow-auto max-h-60">
-                  {JSON.stringify(crawlResult.data, null, 2)}
-                </pre>
+        <Card className="w-full max-w-4xl mx-auto p-6">
+          <h3 className="text-2xl font-semibold mb-6">Analysis Results</h3>
+          
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {renderMetricCard(
+                <Globe className="h-5 w-5 text-blue-500" />,
+                "Pages Analyzed",
+                crawlResult.completed || 0
+              )}
+              {renderMetricCard(
+                <Search className="h-5 w-5 text-green-500" />,
+                "Pages Found",
+                crawlResult.total || 0
+              )}
+              {renderMetricCard(
+                <AlertCircle className="h-5 w-5 text-red-500" />,
+                "Issues Found",
+                crawlResult.data?.length || 0,
+                (crawlResult.data?.length || 0) > 0
+              )}
+            </div>
+
+            {crawlResult.data && crawlResult.data.length > 0 && (
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold">Detailed Analysis</h4>
+                <div className="overflow-auto max-h-96 rounded-lg border border-gray-200 dark:border-gray-800">
+                  <pre className="p-4 text-sm bg-gray-50 dark:bg-gray-900">
+                    {JSON.stringify(crawlResult.data, null, 2)}
+                  </pre>
+                </div>
               </div>
             )}
+
+            <div className="text-sm text-muted-foreground">
+              <p>Analysis completed at: {new Date(crawlResult.expiresAt || '').toLocaleString()}</p>
+              <p>Credits used: {crawlResult.creditsUsed}</p>
+            </div>
           </div>
         </Card>
       )}

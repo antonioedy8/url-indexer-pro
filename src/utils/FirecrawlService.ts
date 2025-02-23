@@ -36,7 +36,6 @@ export class FirecrawlService {
     try {
       console.log('Testing API key with Firecrawl API');
       this.firecrawlApp = new FirecrawlApp({ apiKey });
-      // A simple test crawl to verify the API key
       const testResponse = await this.firecrawlApp.crawlUrl('https://example.com', {
         limit: 1
       });
@@ -63,6 +62,13 @@ export class FirecrawlService {
         limit: 100,
         scrapeOptions: {
           formats: ['markdown', 'html'],
+          selectors: {
+            title: 'title',
+            metaDescription: 'meta[name="description"]',
+            h1: 'h1',
+            images: 'img',
+            links: 'a',
+          }
         }
       }) as CrawlResponse;
 
