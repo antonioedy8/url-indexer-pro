@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CrawlForm } from "@/components/CrawlForm";
 import {
   ChevronRight,
@@ -10,10 +11,16 @@ import {
   Key,
   BarChart3,
   Settings,
+  Map,
+  Search,
+  Microsoft,
 } from "lucide-react";
 
 const Index = () => {
   const [urls, setUrls] = useState<string[]>([]);
+  const [sitemap, setSitemap] = useState("");
+  const [googleKey, setGoogleKey] = useState("");
+  const [bingKey, setBingKey] = useState("");
 
   return (
     <div className="min-h-screen p-8 bg-gradient-to-br from-background to-secondary">
@@ -56,14 +63,94 @@ const Index = () => {
           />
         </section>
 
-        {/* URL Analysis */}
+        {/* Configuration Tabs */}
         <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.2s" }}>
+          <h2 className="text-xl font-semibold mb-4">Configuration</h2>
+          <Tabs defaultValue="sitemap" className="w-full">
+            <TabsList className="grid w-full grid-cols-3 mb-6">
+              <TabsTrigger value="sitemap" className="flex items-center gap-2">
+                <Map className="h-4 w-4" />
+                Sitemap
+              </TabsTrigger>
+              <TabsTrigger value="google" className="flex items-center gap-2">
+                <Search className="h-4 w-4" />
+                Google API
+              </TabsTrigger>
+              <TabsTrigger value="bing" className="flex items-center gap-2">
+                <Microsoft className="h-4 w-4" />
+                Bing API
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="sitemap">
+              <Card className="p-6">
+                <h3 className="text-lg font-medium mb-4">Register Sitemap URL</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      Sitemap URL
+                    </label>
+                    <Input
+                      placeholder="https://example.com/sitemap.xml"
+                      value={sitemap}
+                      onChange={(e) => setSitemap(e.target.value)}
+                    />
+                  </div>
+                  <Button className="w-full">Register Sitemap</Button>
+                </div>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="google">
+              <Card className="p-6">
+                <h3 className="text-lg font-medium mb-4">Google Search Console API</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      API Key
+                    </label>
+                    <Input
+                      type="password"
+                      placeholder="Enter your Google API key"
+                      value={googleKey}
+                      onChange={(e) => setGoogleKey(e.target.value)}
+                    />
+                  </div>
+                  <Button className="w-full">Save Google API Key</Button>
+                </div>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="bing">
+              <Card className="p-6">
+                <h3 className="text-lg font-medium mb-4">Bing Webmaster API</h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">
+                      API Key
+                    </label>
+                    <Input
+                      type="password"
+                      placeholder="Enter your Bing API key"
+                      value={bingKey}
+                      onChange={(e) => setBingKey(e.target.value)}
+                    />
+                  </div>
+                  <Button className="w-full">Save Bing API Key</Button>
+                </div>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </section>
+
+        {/* URL Analysis */}
+        <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.3s" }}>
           <h2 className="text-xl font-semibold mb-4">Content Analysis</h2>
           <CrawlForm />
         </section>
 
         {/* URL Submission */}
-        <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.3s" }}>
+        <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.4s" }}>
           <h2 className="text-xl font-semibold mb-4">Submit URLs</h2>
           <div className="flex gap-4">
             <Input
@@ -87,7 +174,7 @@ const Index = () => {
         </section>
 
         {/* Recent Activity */}
-        <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.4s" }}>
+        <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.5s" }}>
           <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
           <div className="text-center text-muted-foreground py-8">
             No recent indexing activity
