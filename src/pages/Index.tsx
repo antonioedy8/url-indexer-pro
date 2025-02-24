@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,7 +59,6 @@ const Index = () => {
 
   const handleSitemapSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement sitemap processing
     console.log("Registering sitemap:", sitemap);
   };
 
@@ -102,7 +102,6 @@ const Index = () => {
 
   const handleUrlSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implement URL submission with key rotation
     const googleApiKey = ApiKeyService.getAvailableKey('google');
     const bingApiKey = ApiKeyService.getAvailableKey('bing');
     
