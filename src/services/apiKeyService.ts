@@ -8,7 +8,8 @@ interface ApiKey {
 
 export class ApiKeyService {
   private static STORAGE_KEY = 'indexer_api_keys';
-  private static DAILY_LIMIT = 200;
+  private static GOOGLE_DAILY_LIMIT = 200;
+  private static BING_DAILY_LIMIT = 1000;
 
   static saveApiKey(key: string, type: 'google' | 'bing'): void {
     const keys = this.getStoredKeys();
@@ -29,12 +30,13 @@ export class ApiKeyService {
   static getAvailableKey(type: 'google' | 'bing'): string | null {
     const keys = this.getStoredKeys();
     const today = new Date().toDateString();
+    const dailyLimit = type === 'google' ? this.GOOGLE_DAILY_LIMIT : this.BING_DAILY_LIMIT;
     
     // Find a key that hasn't reached the daily limit
     const availableKey = keys.find(key => {
       const keyDate = new Date(key.lastUsed).toDateString();
       return key.type === type && 
-        (keyDate !== today || key.usageCount < this.DAILY_LIMIT);
+        (keyDate !== today || key.usageCount < dailyLimit);
     });
 
     if (!availableKey) {
@@ -63,15 +65,16 @@ export class ApiKeyService {
   static getRemainingQuota(type: 'google' | 'bing'): number {
     const keys = this.getStoredKeys();
     const today = new Date().toDateString();
+    const dailyLimit = type === 'google' ? this.GOOGLE_DAILY_LIMIT : this.BING_DAILY_LIMIT;
     
     const activeKeys = keys.filter(key => 
       key.type === type && 
       new Date(key.lastUsed).toDateString() === today
     );
 
-    if (activeKeys.length === 0) return this.DAILY_LIMIT;
+    if (activeKeys.length === 0) return dailyLimit;
 
     const totalUsage = activeKeys.reduce((sum, key) => sum + key.usageCount, 0);
-    return Math.max(0, this.DAILY_LIMIT - totalUsage);
+    return Math.max(0, dailyLimit - totalUsage);
   }
 }
