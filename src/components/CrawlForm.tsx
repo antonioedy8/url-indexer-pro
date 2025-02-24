@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useToast } from "@/components/ui/use-toast"; 
 import { Button } from "@/components/ui/button";
@@ -8,6 +7,7 @@ import { FirecrawlService } from '@/utils/FirecrawlService';
 import { SeoAnalysisService } from '@/utils/SeoAnalysisService';
 import { Card } from "@/components/ui/card";
 import { Globe, Search, AlertCircle } from "lucide-react";
+import { IndexingMonitor } from './IndexingMonitor';
 
 interface CrawlResult {
   success: boolean;
@@ -216,6 +216,8 @@ export const CrawlForm = () => {
               <p>Credits used: {crawlResult.creditsUsed}</p>
             </div>
           </div>
+
+          {url && <IndexingMonitor url={url} />}
         </Card>
       )}
     </div>
