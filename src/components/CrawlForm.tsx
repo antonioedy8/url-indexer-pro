@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { FirecrawlService } from '@/utils/FirecrawlService';
+import { SeoAnalysisService } from '@/utils/SeoAnalysisService';
 import { Card } from "@/components/ui/card";
 import { Globe, Search, AlertCircle } from "lucide-react";
 
@@ -32,12 +33,14 @@ export const CrawlForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [crawlResult, setCrawlResult] = useState<CrawlResult | null>(null);
+  const [seoMetrics, setSeoMetrics] = useState<SEOMetrics | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setProgress(0);
     setCrawlResult(null);
+    setSeoMetrics(null);
     
     try {
       const apiKey = FirecrawlService.getApiKey();
@@ -51,29 +54,33 @@ export const CrawlForm = () => {
         return;
       }
 
-      console.log('Starting crawl for URL:', url);
-      const result = await FirecrawlService.crawlWebsite(url);
+      // Start both crawl and SEO analysis
+      const [result, metrics] = await Promise.all([
+        FirecrawlService.crawlWebsite(url),
+        SeoAnalysisService.analyzePage(url)
+      ]);
       
       if (result.success) {
         toast({
           title: "Success",
-          description: "Website crawled successfully",
+          description: "Website analyzed successfully",
           duration: 3000,
         });
         setCrawlResult(result.data);
+        setSeoMetrics(metrics);
       } else {
         toast({
           title: "Error",
-          description: result.error || "Failed to crawl website",
+          description: result.error || "Failed to analyze website",
           variant: "destructive",
           duration: 3000,
         });
       }
     } catch (error) {
-      console.error('Error crawling website:', error);
+      console.error('Error analyzing website:', error);
       toast({
         title: "Error",
-        description: "Failed to crawl website",
+        description: "Failed to analyze website",
         variant: "destructive",
         duration: 3000,
       });
@@ -155,7 +162,45 @@ export const CrawlForm = () => {
               )}
             </div>
 
-            {crawlResult.data && crawlResult.data.length > 0 && (
+            {seoMetrics && (
+              <div className="space-y-4">
+                <h4 className="text-lg font-semibold">SEO Analysis</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {renderMetricCard(
+                    <Search className="h-5 w-5 text-blue-500" />,
+                    "Meta Title",
+                    seoMetrics.title || "Missing",
+                    !seoMetrics.title
+                  )}
+                  {renderMetricCard(
+                    <Search className="h-5 w-5 text-green-500" />,
+                    "Meta Description",
+                    seoMetrics.description || "Missing",
+                    !seoMetrics.description
+                  )}
+                  {renderMetricCard(
+                    <AlertCircle className="h-5 w-5 text-yellow-500" />,
+                    "H1 Tags",
+                    seoMetrics.h1Count,
+                    seoMetrics.h1Count !== 1
+                  )}
+                  {renderMetricCard(
+                    <AlertCircle className="h-5 w-5 text-red-500" />,
+                    "Images Without Alt",
+                    seoMetrics.imagesWithoutAlt,
+                    seoMetrics.imagesWithoutAlt > 0
+                  )}
+                  {renderMetricCard(
+                    <AlertCircle className="h-5 w-5 text-red-500" />,
+                    "Broken Links",
+                    seoMetrics.brokenLinks,
+                    seoMetrics.brokenLinks > 0
+                  )}
+                </div>
+              </div>
+            )}
+
+            {crawlResult.data && (
               <div className="space-y-4">
                 <h4 className="text-lg font-semibold">Detailed Analysis</h4>
                 <div className="overflow-auto max-h-96 rounded-lg border border-gray-200 dark:border-gray-800">
