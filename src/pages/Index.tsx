@@ -143,17 +143,47 @@ const Index = () => {
       <main className="space-y-8">
         <StatsOverview {...stats} />
 
-        <ConfigurationTabs
-          sitemap={sitemap}
-          setSitemap={setSitemap}
-          googleKey={googleKey}
-          setGoogleKey={setGoogleKey}
-          bingKey={bingKey}
-          setBingKey={setBingKey}
-          onSitemapSubmit={handleSitemapSubmit}
-          onGoogleKeySubmit={handleGoogleKeySubmit}
-          onBingKeySubmit={handleBingKeySubmit}
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <ConfigurationTabs
+            sitemap={sitemap}
+            setSitemap={setSitemap}
+            googleKey={googleKey}
+            setGoogleKey={setGoogleKey}
+            bingKey={bingKey}
+            setBingKey={setBingKey}
+            onSitemapSubmit={handleSitemapSubmit}
+            onGoogleKeySubmit={handleGoogleKeySubmit}
+            onBingKeySubmit={handleBingKeySubmit}
+          />
+
+          {externalMetrics && (
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Métricas Externas</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <StatCard
+                  icon={<Globe className="h-5 w-5 text-blue-500" />}
+                  title="Autoridade do Domínio"
+                  value={`${externalMetrics.metrics.domainAuthority}/100`}
+                />
+                <StatCard
+                  icon={<TrendingUp className="h-5 w-5 text-green-500" />}
+                  title="Backlinks"
+                  value={externalMetrics.metrics.backlinks.toString()}
+                />
+                <StatCard
+                  icon={<BarChart3 className="h-5 w-5 text-yellow-500" />}
+                  title="Performance"
+                  value={`${externalMetrics.lighthouse.performance}%`}
+                />
+                <StatCard
+                  icon={<Settings className="h-5 w-5 text-purple-500" />}
+                  title="SEO Score"
+                  value={`${externalMetrics.lighthouse.seo}%`}
+                />
+              </div>
+            </Card>
+          )}
+        </div>
 
         <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.3s" }}>
           <h2 className="text-xl font-semibold mb-4">Análise de Conteúdo e SEO</h2>
@@ -167,34 +197,6 @@ const Index = () => {
 
         {selectedUrl && (
           <IndexingMonitor url={selectedUrl} />
-        )}
-
-        {externalMetrics && (
-          <Card className="p-6">
-            <h2 className="text-xl font-semibold mb-4">Métricas Externas</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <StatCard
-                icon={<Globe className="h-5 w-5 text-blue-500" />}
-                title="Autoridade do Domínio"
-                value={`${externalMetrics.metrics.domainAuthority}/100`}
-              />
-              <StatCard
-                icon={<TrendingUp className="h-5 w-5 text-green-500" />}
-                title="Backlinks"
-                value={externalMetrics.metrics.backlinks.toString()}
-              />
-              <StatCard
-                icon={<BarChart3 className="h-5 w-5 text-yellow-500" />}
-                title="Performance"
-                value={`${externalMetrics.lighthouse.performance}%`}
-              />
-              <StatCard
-                icon={<Settings className="h-5 w-5 text-purple-500" />}
-                title="SEO Score"
-                value={`${externalMetrics.lighthouse.seo}%`}
-              />
-            </div>
-          </Card>
         )}
 
         <RecentActivity />
