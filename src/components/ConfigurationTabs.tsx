@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Map, Search } from "lucide-react";
+import { GoogleAuthButton } from "./GoogleAuthButton";
 
 interface ConfigurationTabsProps {
   sitemap: string;
@@ -66,18 +67,21 @@ export const ConfigurationTabs = ({
       <TabsContent value="google">
         <Card className="p-6">
           <h3 className="text-lg font-medium mb-4">API do Google Search Console</h3>
-          <form onSubmit={onGoogleKeySubmit} className="space-y-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Chave da API</label>
-              <Input
-                type="password"
-                placeholder="Digite sua chave da API do Google"
-                value={googleKey}
-                onChange={(e) => setGoogleKey(e.target.value)}
-              />
-            </div>
-            <Button type="submit" className="w-full">Salvar Chave do Google</Button>
-          </form>
+          <div className="space-y-6">
+            <GoogleAuthButton />
+            <form onSubmit={onGoogleKeySubmit} className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">Chave da API</label>
+                <Input
+                  type="password"
+                  placeholder="Digite sua chave da API do Google"
+                  value={googleKey}
+                  onChange={(e) => setGoogleKey(e.target.value)}
+                />
+              </div>
+              <Button type="submit" className="w-full">Salvar Chave do Google</Button>
+            </form>
+          </div>
         </Card>
       </TabsContent>
 
