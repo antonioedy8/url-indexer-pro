@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { ApiKeyService } from "@/services/apiKeyService";
@@ -11,6 +10,7 @@ import { RecentActivity } from "@/components/RecentActivity";
 import { IndexingMonitor } from "@/components/IndexingMonitor";
 import { ExternalApiService } from "@/utils/ExternalApiService";
 import { ExternalMetrics } from "@/components/ExternalMetrics";
+import { SeoAnalysis } from "@/components/SeoAnalysis";
 
 interface IndexingStats {
   totalUrls: number;
@@ -158,6 +158,8 @@ const Index = () => {
             <ExternalMetrics metrics={externalMetrics} />
           )}
         </div>
+
+        <SeoAnalysis />
 
         <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.3s" }}>
           <h2 className="text-xl font-semibold mb-4">Análise de Conteúdo e SEO</h2>
