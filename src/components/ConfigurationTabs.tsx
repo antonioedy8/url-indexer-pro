@@ -1,10 +1,24 @@
-
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Map, Search } from "lucide-react";
 import { GoogleAuthButton } from "./GoogleAuthButton";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+interface ApiKey {
+  id: string;
+  key: string;
+  type: 'google' | 'bing';
+  siteId: string;
+}
+
+interface Site {
+  id: string;
+  name: string;
+  url: string;
+  sitemap: string;
+}
 
 interface ConfigurationTabsProps {
   sitemap: string;
@@ -16,6 +30,9 @@ interface ConfigurationTabsProps {
   onSitemapSubmit: (e: React.FormEvent) => void;
   onGoogleKeySubmit: (e: React.FormEvent) => void;
   onBingKeySubmit: (e: React.FormEvent) => void;
+  sites: Site[];
+  apiKeys: ApiKey[];
+  onApiKeyDelete: (id: string) => void;
 }
 
 export const ConfigurationTabs = ({
@@ -28,6 +45,9 @@ export const ConfigurationTabs = ({
   onSitemapSubmit,
   onGoogleKeySubmit,
   onBingKeySubmit,
+  sites,
+  apiKeys,
+  onApiKeyDelete,
 }: ConfigurationTabsProps) => (
   <section className="glass-panel p-6 fade-enter" style={{ animationDelay: "0.2s" }}>
     <h2 className="text-xl font-semibold mb-4">Configuração</h2>
@@ -71,6 +91,21 @@ export const ConfigurationTabs = ({
             <GoogleAuthButton />
             <form onSubmit={onGoogleKeySubmit} className="space-y-4">
               <div>
+                <label className="text-sm font-medium mb-2 block">Site</label>
+                <Select>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione um site" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {sites.map((site) => (
+                      <SelectItem key={site.id} value={site.id}>
+                        {site.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
                 <label className="text-sm font-medium mb-2 block">Chave da API</label>
                 <Input
                   type="password"
@@ -81,6 +116,33 @@ export const ConfigurationTabs = ({
               </div>
               <Button type="submit" className="w-full">Salvar Chave do Google</Button>
             </form>
+
+            <div className="mt-6">
+              <h4 className="text-sm font-medium mb-2">APIs Cadastradas</h4>
+              <div className="space-y-2">
+                {apiKeys
+                  .filter(key => key.type === 'google')
+                  .map(key => {
+                    const site = sites.find(s => s.id === key.siteId);
+                    return (
+                      <div key={key.id} className="flex items-center justify-between p-2 bg-secondary rounded-md">
+                        <div>
+                          <p className="font-medium">{site?.name}</p>
+                          <p className="text-sm text-muted-foreground">{site?.url}</p>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => onApiKeyDelete(key.id)}
+                          className="text-red-500 hover:text-red-600"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
           </div>
         </Card>
       </TabsContent>

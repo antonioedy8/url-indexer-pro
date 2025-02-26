@@ -1,7 +1,8 @@
-
 interface ApiKey {
+  id: string;
   key: string;
   type: 'google' | 'bing';
+  siteId: string;
   usageCount: number;
   lastUsed: Date;
 }
@@ -11,11 +12,13 @@ export class ApiKeyService {
   private static GOOGLE_DAILY_LIMIT = 200;
   private static BING_DAILY_LIMIT = 1000;
 
-  static saveApiKey(key: string, type: 'google' | 'bing'): void {
+  static saveApiKey(key: string, type: 'google' | 'bing', siteId: string): void {
     const keys = this.getStoredKeys();
     keys.push({
+      id: Date.now().toString(),
       key,
       type,
+      siteId,
       usageCount: 0,
       lastUsed: new Date()
     });
@@ -27,28 +30,30 @@ export class ApiKeyService {
     return stored ? JSON.parse(stored) : [];
   }
 
-  static getAvailableKey(type: 'google' | 'bing'): string | null {
+  static getAvailableKey(type: 'google' | 'bing', siteId: string): string | null {
     const keys = this.getStoredKeys();
     const today = new Date().toDateString();
     const dailyLimit = type === 'google' ? this.GOOGLE_DAILY_LIMIT : this.BING_DAILY_LIMIT;
     
-    // Find a key that hasn't reached the daily limit
-    const availableKey = keys.find(key => {
-      const keyDate = new Date(key.lastUsed).toDateString();
-      return key.type === type && 
-        (keyDate !== today || key.usageCount < dailyLimit);
-    });
+    const availableKey = keys.find(key => 
+      key.type === type && 
+      key.siteId === siteId &&
+      (new Date(key.lastUsed).toDateString() !== today || key.usageCount < dailyLimit)
+    );
 
-    if (!availableKey) {
-      return null;
-    }
+    if (!availableKey) return null;
 
-    // Reset count if it's a new day
     if (new Date(availableKey.lastUsed).toDateString() !== today) {
       availableKey.usageCount = 0;
     }
 
     return availableKey.key;
+  }
+
+  static deleteApiKey(id: string): void {
+    const keys = this.getStoredKeys();
+    const filteredKeys = keys.filter(key => key.id !== id);
+    localStorage.setItem(this.STORAGE_KEY, JSON.stringify(filteredKeys));
   }
 
   static incrementKeyUsage(key: string): void {
