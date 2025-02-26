@@ -1,4 +1,6 @@
 
+import { ApiKeyService } from "./apiKeyService";
+
 interface IndexingResponse {
   success: boolean;
   error?: string;
