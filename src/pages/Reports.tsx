@@ -2,14 +2,15 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Download, Calendar } from "lucide-react";
+import { Download } from "lucide-react";
 import { DatePickerWithRange } from "@/components/ui/date-range-picker";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { DateRange } from "react-day-picker";
 
 const Reports = () => {
-  const [dateRange, setDateRange] = useState({
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(),
-    to: new Date(),
+    to: new Date()
   });
 
   const mockData = [
