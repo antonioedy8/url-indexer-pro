@@ -1,10 +1,11 @@
+
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Map, Search } from "lucide-react";
-import { GoogleAuthButton } from "./GoogleAuthButton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Map, Search, Trash2 } from "lucide-react";
+import { GoogleAuthButton } from "./GoogleAuthButton";
 
 interface ApiKey {
   id: string;
@@ -151,6 +152,21 @@ export const ConfigurationTabs = ({
         <Card className="p-6">
           <h3 className="text-lg font-medium mb-4">API do Bing Webmaster</h3>
           <form onSubmit={onBingKeySubmit} className="space-y-4">
+            <div>
+              <label className="text-sm font-medium mb-2 block">Site</label>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um site" />
+                </SelectTrigger>
+                <SelectContent>
+                  {sites.map((site) => (
+                    <SelectItem key={site.id} value={site.id}>
+                      {site.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div>
               <label className="text-sm font-medium mb-2 block">Chave da API</label>
               <Input

@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { ApiKeyService } from "@/services/apiKeyService";
@@ -21,6 +22,20 @@ interface IndexingStats {
   trafficIncrease?: number;
 }
 
+interface Site {
+  id: string;
+  name: string;
+  url: string;
+  sitemap: string;
+}
+
+interface ApiKey {
+  id: string;
+  key: string;
+  type: 'google' | 'bing';
+  siteId: string;
+}
+
 const Index = () => {
   const { toast } = useToast();
   const [urls, setUrls] = useState<string[]>([]);
@@ -29,6 +44,8 @@ const Index = () => {
   const [bingKey, setBingKey] = useState("");
   const [selectedUrl, setSelectedUrl] = useState<string>("");
   const [externalMetrics, setExternalMetrics] = useState<any>(null);
+  const [sites, setSites] = useState<Site[]>([]);
+  const [apiKeys, setApiKeys] = useState<ApiKey[]>([]);
   const [stats, setStats] = useState<IndexingStats>({
     totalUrls: 0,
     activeApis: 0,
@@ -65,7 +82,7 @@ const Index = () => {
   const handleGoogleKeySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      ApiKeyService.saveApiKey(googleKey, 'google');
+      ApiKeyService.saveApiKey(googleKey, 'google', "default-site");
       toast({
         title: "Sucesso",
         description: "Chave da API do Google salva com sucesso",
@@ -84,7 +101,7 @@ const Index = () => {
   const handleBingKeySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      ApiKeyService.saveApiKey(bingKey, 'bing');
+      ApiKeyService.saveApiKey(bingKey, 'bing', "default-site");
       toast({
         title: "Sucesso",
         description: "Chave da API do Bing salva com sucesso",
@@ -100,10 +117,19 @@ const Index = () => {
     }
   };
 
+  const handleApiKeyDelete = (id: string) => {
+    ApiKeyService.deleteApiKey(id);
+    updateStats();
+    toast({
+      title: "Sucesso",
+      description: "Chave API removida com sucesso",
+    });
+  };
+
   const handleUrlSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const googleApiKey = ApiKeyService.getAvailableKey('google');
-    const bingApiKey = ApiKeyService.getAvailableKey('bing');
+    const googleApiKey = ApiKeyService.getAvailableKey('google', "default-site");
+    const bingApiKey = ApiKeyService.getAvailableKey('bing', "default-site");
     
     if (!googleApiKey && !bingApiKey) {
       toast({
@@ -152,6 +178,9 @@ const Index = () => {
             onSitemapSubmit={handleSitemapSubmit}
             onGoogleKeySubmit={handleGoogleKeySubmit}
             onBingKeySubmit={handleBingKeySubmit}
+            sites={sites}
+            apiKeys={apiKeys}
+            onApiKeyDelete={handleApiKeyDelete}
           />
 
           {externalMetrics && (
