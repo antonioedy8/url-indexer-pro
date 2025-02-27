@@ -1,7 +1,7 @@
 
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Home, Layout, Search, Settings, BarChart2 } from "lucide-react";
+import { Home, Layout, Search, Settings, BarChart2, Globe } from "lucide-react";
 
 export const MainNavigation = () => {
   const location = useLocation();
@@ -9,7 +9,7 @@ export const MainNavigation = () => {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="flex items-center space-x-4 lg:space-x-6 mx-4">
+    <nav className="flex items-center space-x-4 lg:space-x-6 p-4 border-b">
       <Link to="/">
         <Button
           variant={isActive('/') ? 'default' : 'ghost'}
@@ -33,17 +33,8 @@ export const MainNavigation = () => {
           variant={isActive('/seo') ? 'default' : 'ghost'}
           className="flex items-center gap-2"
         >
-          <Search className="h-4 w-4" />
+          <Globe className="h-4 w-4" />
           <span>SEO</span>
-        </Button>
-      </Link>
-      <Link to="/settings">
-        <Button
-          variant={isActive('/settings') ? 'default' : 'ghost'}
-          className="flex items-center gap-2"
-        >
-          <Settings className="h-4 w-4" />
-          <span>Configurações</span>
         </Button>
       </Link>
       <Link to="/analytics">
@@ -53,6 +44,15 @@ export const MainNavigation = () => {
         >
           <BarChart2 className="h-4 w-4" />
           <span>Analytics</span>
+        </Button>
+      </Link>
+      <Link to="/settings">
+        <Button
+          variant={isActive('/settings') ? 'default' : 'ghost'}
+          className="flex items-center gap-2"
+        >
+          <Settings className="h-4 w-4" />
+          <span>Configurações</span>
         </Button>
       </Link>
     </nav>
